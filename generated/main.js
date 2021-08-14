@@ -61,7 +61,6 @@ function addCodeExamplesCallbacks() {
                 continue;
             tabButton.onclick = () => {
                 clickCodeExampleTabButton(tabTarget, codeExample);
-                console.log(tabTarget);
             };
         }
     }
@@ -97,11 +96,12 @@ function createSidebarTab(sidebarTab, parentId) {
     else {
         let li = document.createElement("li");
         {
-            let button = document.createElement("button");
-            button.classList.add("btn", "rounded", "ps-3", "pe-0", "pb-0", "pt-0", "w-100", "text-white", "text-start");
-            button.id = parentId != null ? parentId + "-" + sidebarTab.id : sidebarTab.id;
-            button.textContent = sidebarTab.name;
-            li.appendChild(button);
+            let a = document.createElement("a");
+            a.classList.add("btn", "rounded", "ps-3", "pe-0", "pb-0", "pt-0", "w-100", "text-white", "text-start");
+            a.id = parentId != null ? parentId + "-" + sidebarTab.id : sidebarTab.id;
+            a.setAttribute("href", "#" + a.id);
+            a.textContent = sidebarTab.name;
+            li.appendChild(a);
         }
         return li;
     }
@@ -112,9 +112,18 @@ function addSidebarTabs() {
     for (let i = 0, len = sidebarTabs.length; i < len; ++i)
         sidebarTabsElement.appendChild(createSidebarTab(sidebarTabs[i], null));
 }
+function onPageLoaded() {
+    console.log(window.location.hash);
+    // Remove children in #code-page div
+    // Add new children to #code-page div
+    addCodeExamplesCallbacks();
+}
+window.addEventListener('hashchange', function () {
+    onPageLoaded();
+}, false);
 document.addEventListener('DOMContentLoaded', function () {
     addSidebarTabs();
-    //addCodeExamplesCallbacks();
+    onPageLoaded();
 }, false);
 /*
  <li class="mb-1">
