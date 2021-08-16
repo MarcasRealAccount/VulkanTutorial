@@ -1,11 +1,13 @@
 class SidebarTab {
     name: string;
     id: string;
+    filepath: string;
     elements: SidebarTab[];
 
-    constructor(name: string, id: string) {
+    constructor(name: string, id: string, filepath: string) {
         this.name = name;
         this.id = id;
+        this.filepath = filepath;
         this.elements = [];
     }
 
@@ -16,15 +18,42 @@ class SidebarTab {
 }
 
 let sidebarTabs: SidebarTab[] = [
-    new SidebarTab("Device Creation", "device-creation").setElements([
-        new SidebarTab("Instance", "instance"),
-        new SidebarTab("Physical Device", "physical-device"),
-        new SidebarTab("Device", "device")
+    new SidebarTab("Device Creation", "device-creation", "device-creation/").setElements([
+        new SidebarTab("Instance", "instance", "instance.html"),
+        new SidebarTab("Physical Device", "physical-device", "physical-device.html"),
+        new SidebarTab("Device", "device", "device.html")
     ]),
-    new SidebarTab("Swapchain Creation", "swapchain-creation").setElements([
-        new SidebarTab("Swapchain", "swapchain")
+    new SidebarTab("Swapchain Creation", "swapchain-creation", "swapchain-creation/").setElements([
+        new SidebarTab("Swapchain", "swapchain", "swapchain")
     ])
 ];
+
+function tryGetCodePage(codepage: string, tab: SidebarTab): string | null {
+    if (tab.elements.length > 0) {
+        if (codepage.startsWith(tab.id)) {
+            let otherPart = codepage.substr(tab.id.length + 1);
+
+            for (let i: number = 0, len: number = tab.elements.length; i < len; ++i) {
+                let result = tryGetCodePage(otherPart, tab.elements[i]);
+                if (result != null)
+                    return tab.filepath + result;
+            }
+        }
+    } else if (tab.id === codepage) {
+        return tab.filepath;
+    }
+
+    return null;
+}
+
+function getCodePage(codepage: string): string | null {
+    for (let i: number = 0, len: number = sidebarTabs.length; i < len; ++i) {
+        let result = tryGetCodePage(codepage, sidebarTabs[i]);
+        if (result != null)
+            return result;
+    }
+    return null;
+}
 
 function clickCodeExampleTabButton(tabTarget: string, codeExample: Element): void {
     let tabs = codeExample.querySelectorAll("ul li");
@@ -119,10 +148,29 @@ function addSidebarTabs(): void {
 }
 
 function onPageLoaded(): void {
-    console.log(window.location.hash);
-    // Remove children in #code-page div
-    // Add new children to #code-page div
-    addCodeExamplesCallbacks();
+    let codePage = document.getElementById("code-page");
+    if (codePage == null) {
+        // Print error message when #code-page div is somehow missing
+        console.error("#code-page div missing, please create a git issue if this message is not already there!");
+    } else {
+        // Remove children in #code-page div
+        codePage.textContent = "";
+        let codePageURL = getCodePage(window.location.hash.substr(1));
+        if (codePageURL == null) {
+            // Show 404 page
+        } else {
+            fetch(codePageURL as string)
+                .then((response) => response.text())
+                .then((html) => {
+                    (codePage as HTMLElement).innerHTML = html;
+                })
+                .catch((error) => {
+                    console.warn(error);
+                });
+        }
+        // Add new children to #code-page div
+        addCodeExamplesCallbacks();
+    }
 }
 
 window.addEventListener('hashchange', function () {
@@ -133,30 +181,3 @@ document.addEventListener('DOMContentLoaded', function () {
     addSidebarTabs();
     onPageLoaded();
 }, false);
-
-/*
- <li class="mb-1">
-                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-white" data-bs-toggle="collapse" data-bs-target="#device-creation-collapse" aria-expanded="true">
-                        Device Creation
-                    </button>
-                    <div class="collapse show" id="device-creation-collapse">
-                        <ul class="d-flex flex-column btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                            <li>
-                                <button class="btn rounded ps-3 pe-0 pb-0 pt-0 w-100 text-white text-start" id="device-creation-instance-button">
-                                    Instance
-                                </button>
-                            </li>
-                            <li>
-                                <button class="btn rounded ps-3 pe-0 pb-0 pt-0 w-100 text-white text-start" id="device-creation-physical-device-button">
-                                    Physical Device
-                                </button>
-                            </li>
-                            <li>
-                                <button class="btn rounded ps-3 pe-0 pb-0 pt-0 w-100 text-white text-start" id="device-creation-device-button">
-                                    Device
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
- */
