@@ -158,18 +158,23 @@ function onPageLoaded(): void {
         let codePageURL = getCodePage(window.location.hash.substr(1));
         if (codePageURL == null) {
             // Show 404 page
+            (codePage as HTMLElement).innerHTML = "404 Page not found!";
         } else {
-            fetch(codePageURL as string)
-                .then((response) => response.text())
-                .then((html) => {
-                    (codePage as HTMLElement).innerHTML = html;
-                })
-                .catch((error) => {
-                    console.warn(error);
-                });
+            let response = fetch(codePageURL as string).then(response => {
+                if (response.ok)
+                    return response.text()
+                else
+                    return Promise.reject();
+            });
+
+            response.then(html => {
+                (codePage as HTMLElement).innerHTML = html;
+                addCodeExamplesCallbacks();
+            }, error => {
+                // Show 404 page
+                (codePage as HTMLElement).innerHTML = "404 Page not found!";
+            });
         }
-        // Add new children to #code-page div
-        addCodeExamplesCallbacks();
     }
 }
 

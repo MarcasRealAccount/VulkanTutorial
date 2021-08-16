@@ -149,19 +149,23 @@ function onPageLoaded() {
         let codePageURL = getCodePage(window.location.hash.substr(1));
         if (codePageURL == null) {
             // Show 404 page
+            codePage.innerHTML = "404 Page not found!";
         }
         else {
-            fetch(codePageURL)
-                .then((response) => response.text())
-                .then((html) => {
+            let response = fetch(codePageURL).then(response => {
+                if (response.ok)
+                    return response.text();
+                else
+                    return Promise.reject();
+            });
+            response.then(html => {
                 codePage.innerHTML = html;
-            })
-                .catch((error) => {
-                console.warn(error);
+                addCodeExamplesCallbacks();
+            }, error => {
+                // Show 404 page
+                codePage.innerHTML = "404 Page not found!";
             });
         }
-        // Add new children to #code-page div
-        addCodeExamplesCallbacks();
     }
 }
 window.addEventListener('hashchange', function () {
