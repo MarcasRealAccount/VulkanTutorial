@@ -160,6 +160,7 @@ function onPageLoaded(): void {
             // Show 404 page
             (codePage as HTMLElement).innerHTML = "404 Page not found!";
         } else {
+            codePageURL += window.location.search;
             let response = fetch(codePageURL as string).then(response => {
                 if (response.ok)
                     return response.text()
