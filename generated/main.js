@@ -13,9 +13,9 @@ class SidebarTab {
 }
 let sidebarTabs = [
     new SidebarTab("Device Creation", "device-creation", "device-creation/").setElements([
-        new SidebarTab("Instance", "instance", "instance.html"),
-        new SidebarTab("Physical Device", "physical-device", "physical-device.html"),
-        new SidebarTab("Device", "device", "device.html")
+        new SidebarTab("Instance", "instance", "instance"),
+        new SidebarTab("Physical Device", "physical-device", "physical-device"),
+        new SidebarTab("Device", "device", "device")
     ]),
     new SidebarTab("Swapchain Creation", "swapchain-creation", "swapchain-creation/").setElements([
         new SidebarTab("Swapchain", "swapchain", "swapchain")
@@ -45,15 +45,15 @@ function getCodePage(codepage) {
     }
     return null;
 }
-function clickCodeExampleTabButton(tabTarget, codeExample) {
+function clickCodeExampleTabButton(tabExtension, codeExample, index) {
     let tabs = codeExample.querySelectorAll("ul li");
     for (let i = 0, len = tabs.length; i < len; ++i) {
         let tab = tabs[i];
         let tabButton = tab.getElementsByTagName("button")[0];
-        let tabButtonTarget = tabButton.getAttribute("data-code-example-id");
-        if (tabButtonTarget == null)
+        let tabButtonExtension = tabButton.getAttribute("data-code-extension");
+        if (tabButtonExtension == null)
             continue;
-        if (tabButtonTarget === tabTarget) {
+        if (tabButtonExtension === tabExtension) {
             tabButton.classList.add("active");
             tabButton.setAttribute("aria-current", "page");
         }
@@ -62,33 +62,55 @@ function clickCodeExampleTabButton(tabTarget, codeExample) {
             tabButton.removeAttribute("aria-current");
         }
     }
-    let divs = codeExample.getElementsByTagName("div");
-    for (let i = 0, len = divs.length; i < len; ++i) {
-        let div = divs[i];
-        if (div.id === tabTarget) {
-            div.classList.remove("d-none");
-        }
-        else {
-            div.classList.add("d-none");
+    let pres = codeExample.getElementsByTagName("pre");
+    for (let i = 0, len = pres.length; i < len; ++i) {
+        let pre = pres[i];
+        if (pre.id === "code") {
+            let codePageURL = getCodePage(window.location.hash.substr(1));
+            if (codePageURL == null) {
+                // Show 404 page
+                pre.textContent = "404 Code not found!";
+            }
+            else {
+                codePageURL += "-example" + index + "." + tabExtension + window.location.search;
+                let response = fetch(codePageURL).then(response => {
+                    if (response.ok)
+                        return response.text();
+                    else
+                        return Promise.reject();
+                });
+                response.then(html => {
+                    pre.textContent = html;
+                }, error => {
+                    // Show 404 page
+                    pre.textContent = "404 Code not found!";
+                });
+            }
         }
     }
 }
-function addCodeExamplesCallbacks() {
+function addCodeExamples() {
     let codeExamples = document.getElementsByClassName("code-examples");
     for (let i = 0, len = codeExamples.length; i < len; ++i) {
         let codeExample = codeExamples[i];
         let tabs = codeExample.querySelectorAll("ul li");
+        let firstExtension = null;
         for (let j = 0, jlen = tabs.length; j < jlen; ++j) {
             let tab = tabs[j];
             let tabButton = tab.getElementsByTagName("button")[0];
-            let tabTarget = tabButton.getAttribute("data-code-example-id");
-            if (tabTarget == null)
+            let tabExtension = tabButton.getAttribute("data-code-extension");
+            if (tabExtension == null)
                 continue;
+            if (firstExtension == null)
+                firstExtension = tabExtension;
             tabButton.onclick = () => {
-                clickCodeExampleTabButton(tabTarget, codeExample);
+                clickCodeExampleTabButton(tabExtension, codeExample, i + 1);
             };
         }
+        if (firstExtension != null)
+            clickCodeExampleTabButton(firstExtension, codeExample, i + 1);
     }
+    console.log("WUT");
 }
 function createSidebarTab(sidebarTab, parentId) {
     if (sidebarTab.elements.length > 0) {
@@ -152,7 +174,7 @@ function onPageLoaded() {
             codePage.innerHTML = "404 Page not found!";
         }
         else {
-            codePageURL += window.location.search;
+            codePageURL += ".html" + window.location.search;
             let response = fetch(codePageURL).then(response => {
                 if (response.ok)
                     return response.text();
@@ -161,7 +183,7 @@ function onPageLoaded() {
             });
             response.then(html => {
                 codePage.innerHTML = html;
-                addCodeExamplesCallbacks();
+                addCodeExamples();
             }, error => {
                 // Show 404 page
                 codePage.innerHTML = "404 Page not found!";
