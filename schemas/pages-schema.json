@@ -1,7 +1,7 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema",
-	"description": "Info schema",
-	"id": "infoSchema",
+	"description": "Pages schema",
+	"id": "pagesSchema",
 	"$defs": {
 		"pageListing": {
 			"description": "Page listing",
@@ -23,7 +23,7 @@
 					"items": {
 						"$ref": "#/$defs/pageListing"
 					},
-					"type": [ "string", "array" ],
+					"type": "array",
 					"uniqueItems": true
 				}
 			},
@@ -33,42 +33,16 @@
 	},
 	"properties": {
 		"pages": {
-			"description": "The pages available from the sidebar",
+			"description": "List of pages",
 			"items": {
 				"$ref": "#/$defs/pageListing"
 			},
 			"type": "array",
 			"uniqueItems": true
-		},
-		"startPage": {
-			"description": "The page to start at",
-			"type": "string"
-		},
-		"availableExtensions": {
-			"description": "Extensions to assume exists for all tutorials",
-			"items": {
-				"properties": {
-					"visibleName": {
-						"description": "The visible name of this extension",
-						"type": "string"
-					},
-					"id": {
-						"description": "Id used to separate equally named extensions",
-						"type": "string"
-					}
-				},
-				"type": "object"
-			},
-			"type": "array",
-			"uniqueItems": true
-		},
-		"defaultExtension": {
-			"description": "The default extension to use from the available extensions array",
-			"type": "string"
 		}
 	},
-	"required": [ "pages", "startPage", "availableExtensions", "defaultExtension" ],
-	"title": "Info Schema",
+	"required": [ "pages" ],
+	"title": "Pages Schema",
 	"type": "object",
 	"version": "1.0.0"
 }

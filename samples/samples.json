@@ -1,6 +1,6 @@
 {
-	"$schema": "../schema/samples-schema.json",
-	"samples": [
+	"$schema": "../schema/pages-schema.json",
+	"pages": [
 		{
 			"visibleName": "Test",
 			"sidebarId": "test",

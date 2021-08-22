@@ -1,11 +1,11 @@
 {
-	"$schema": "../schemas/tutorials-schema.json",
-	"tutorials": [
+	"$schema": "../schemas/pages-schema.json",
+	"pages": [
 		{
 			"visibleName": "Device Creation",
 			"sidebarId": "device-creation",
 			"id": "create",
-			"tutorials": [
+			"subPages": [
 				{
 					"visibleName": "Instance",
 					"sidebarId": "instance",
@@ -27,7 +27,7 @@
 			"visibleName": "Swapchain Creation",
 			"sidebarId": "swapchain-creation",
 			"id": "create",
-			"tutorials": [
+			"subPages": [
 				{
 					"visibleName": "Swapchain",
 					"sidebarId": "swapchain",

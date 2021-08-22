@@ -1,50 +1,83 @@
-let activePageResponse: Promise<string> | null;
-let activePageDir: string = "";
-let activePageInfo: any = {};
+let activePagePromise: Promise<void>;
+let activePageTitlePromise: Promise<void>;
+let activePageInitialiseExamplesPromise: Promise<void>;
+let activePageCodeExamplesPromise: Promise<void>;
 
-async function getCodeExample(codeExample: string): Promise<string> {
+let openedPageDir: string = "";
+let openedPageInfo: any = {};
+
+function getCodeExample(codeExample: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        resolve("Hey");
+        resolve("Hey " + selectedExtension);
     });
 }
 
-async function updatePageCodeExamples() {
-    await activePageResponse;
+function updatePageTitle() {
+    activePagePromise.then(() => {
+        optionsPromise.then(() => {
+            let pageTitleSpan = document.querySelector("span#page-title");
+            if (pageTitleSpan == null) return;
+            let pageName = getPageVisibleName(openedPage as string);
+            if (pageName == null) return;
+            pageTitleSpan.textContent = pageName;
+        }, error => {
+        });
+    }, error => {
+    });
+}
 
+function activePageInitialiseExamples() {
+    activePageInitialiseExamplesPromise = new Promise<void>((resolve, reject) => {
+        activePagePromise.then(() => {
+            let codeExamples = document.querySelectorAll("div.code-example");
+            for (let i: number = 0, len: number = codeExamples.length; i < len; ++i) {
+                let codeExample = codeExamples[i];
+                let html = "<ul class=\"nav nav-tabs\">";
+
+                for (let j: number = 0, jlen: number = info.availableExtensions.length; j < jlen; ++j) {
+                    let extension = info.availableExtensions[j];
+                    html += "<li class=\"nav-item\"><button class=\"btn nav-link\" data-code-extension=\"" + extension.id + "\">" + extension.visibleName + "</button></li>";
+                }
+
+                html += "</ul><div class=\"code-example-code\" id=\"" + codeExample.id + "-code\">Loading</div>";
+
+                codeExample.innerHTML = html;
+
+                let buttons = codeExample.querySelectorAll("ul li button");
+                for (let j: number = 0, jlen: number = buttons.length; j < jlen; ++j) {
+                    let button = buttons[j];
+                    button.addEventListener("click", () => {
+                        let newExtension = button.getAttribute("data-code-extension");
+                        if (newExtension == null) return;
+                        setOptionValue("extension", newExtension);
+                    }, false);
+                }
+            }
+            resolve();
+        }, error => {
+            resolve();
+        });
+    });
+}
+
+function updatePageCodeExamples_() {
     let codeExamples = document.querySelectorAll("div.code-example");
     for (let i: number = 0, len: number = codeExamples.length; i < len; ++i) {
         let codeExample = codeExamples[i];
-        let html = "<ul class=\"nav nav-tabs\">";
 
-        for (let j: number = 0, jlen: number = info.availableExtensions.length; j < jlen; ++j) {
-            let extension = info.availableExtensions[j];
-            html += "<li class=\"nav-item\"><button class=\"btn nav-link";
-            if (extension.id === selectedExtension) html += " active";
-            html += "\"";
-            if (extension.id === selectedExtension) html += " aria-current=\"page\"";
-            html += " data-code-extension=\"" + extension.id + "\">" + extension.visibleName + "</button></li>";
-        }
-
-        html += "</ul><div class=\"code-example-code\" id=\"" + codeExample.id + "-code\">Loading</div>";
-
-        codeExample.innerHTML = html;
-
-        let buttons = codeExample.querySelectorAll("ul li button");
-        for (let j: number = 0, jlen: number = buttons.length; j < jlen; ++j) {
-            let button = buttons[j];
-            button.addEventListener("click", () => {
-                let searchParams = new URLSearchParams(window.location.search);
-                let newExtension = button.getAttribute("data-code-extension");
-                if (newExtension == null) return;
-                if (searchParams.get("extension") !== newExtension) {
-                    searchParams.set("extension", newExtension);
-                    window.location.search = searchParams.toString();
-                }
-            }, false);
+        let extensions = codeExample.querySelectorAll("ul.nav li.nav-item button.nav-link");
+        for (let j: number = 0, jlen: number = extensions.length; j < jlen; ++j) {
+            let extension = extensions[j];
+            if (extension.getAttribute("data-code-extension") === selectedExtension) {
+                extension.classList.add("active");
+                extension.setAttribute("aria-current", "page");
+            } else {
+                extension.classList.remove("active");
+                extension.removeAttribute("aria-current");
+            }
         }
 
         let codeDiv = codeExample.querySelector("#" + codeExample.id + "-code");
-
         if (codeDiv != null) {
             getCodeExample(codeExample.id.replace(/-/g, "/") + "/").then(code => {
                 (codeDiv as Element).innerHTML = code;
@@ -53,102 +86,106 @@ async function updatePageCodeExamples() {
     }
 }
 
-async function updateActivePage() {
-    await selectedExtensionResponse;
-    activePageResponse = new Promise<string>(async (resolve, reject) => {
-        activePageDir = window.location.hash.substr(1).replace(/-/g, "/") + "/";
-        if (activePageDir === "/") activePageDir = "home/";
+function updatePageCodeExamples() {
+    activePageCodeExamplesPromise = new Promise<void>((resolve, reject) => {
+        activePageInitialiseExamplesPromise.then(() => {
+            updatePageCodeExamples_();
+            resolve();
+        }, error => {
+            updatePageCodeExamples_();
+            resolve();
+        });
+    });
+}
 
-        let pageInfoPath = activePageDir + "info.json";
-        let pageInfoResponse = new Promise<void>(async (resolve, reject) => {
-            fetch(pageInfoPath).then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    return Promise.reject();
-                }
-            }).then(json => {
-                activePageInfo = json;
+function updateActivePage() {
+    activePagePromise = new Promise<void>((resolve, reject) => {
+        selectedExtensionPromise.then(() => {
+            updatePageTitle();
+            activePageInitialiseExamples();
+            updatePageCodeExamples();
+            if (previousOpenedPage === openedPage) {
+                reject();
+                return;
+            }
+
+            let pageContent = document.querySelector("div#page-content");
+            if (pageContent == null) {
                 resolve();
-            }, async error => {
-                // Load 404 error page.
-                activePageDir = "error/404/";
-                pageInfoPath = activePageDir + "info.json";
+                return;
+            }
+
+            openedPageDir = openedPage?.replace(/-/g, "/") + "/";
+            if (openedPageDir === "/") openedPageDir = "home/";
+
+            let pageInfoPath = openedPageDir + "info.json";
+            new Promise<void>((resolve, reject) => {
                 fetch(pageInfoPath).then(response => {
-                    if (response.ok)
-                        return response.json();
-                    else
-                        return Promise.reject();
+                    if (response.ok) return response.json();
+                    else return Promise.reject();
                 }).then(json => {
-                    activePageInfo = json;
+                    openedPageInfo = json;
                     resolve();
                 }, error => {
-                    activePageInfo = {};
-                    resolve();
+                    // Load 404 error page.
+                    openedPageDir = "error/404/";
+                    pageInfoPath = openedPageDir + "info.json";
+                    fetch(pageInfoPath).then(response => {
+                        if (response.ok) return response.json();
+                        else return Promise.reject();
+                    }).then(json => {
+                        openedPageInfo = json;
+                        resolve();
+                    }, error => {
+                        openedPageInfo = {};
+                        resolve();
+                    });
                 });
+            }).then(() => {
+                if (openedPageInfo.page != null) {
+                    fetch(openedPageDir + openedPageInfo.page).then(response => {
+                        if (response.ok) return response.text();
+                        else return Promise.reject();
+                    }).then(text => {
+                        (pageContent as Element).innerHTML = text;
+                        resolve();
+                    }, error => {
+                        if (openedPageDir !== "error/404/") {
+                            // Load 404 error page.
+                            openedPageDir = "error/404/";
+                            pageInfoPath = openedPageDir + "info.json";
+                            fetch(pageInfoPath).then(response => {
+                                if (response.ok) return response.json();
+                                else return Promise.reject();
+                            }).then(json => {
+                                if (openedPageInfo.page != null) {
+                                    fetch(openedPageDir + openedPageInfo.page).then(response => {
+                                        if (response.ok) return response.text();
+                                        else return Promise.reject();
+                                    }).then(text => {
+                                        (pageContent as Element).innerHTML = text;
+                                        resolve();
+                                    }, error => {
+                                        // If all else fails just write "404 Page not found!"
+                                        (pageContent as Element).textContent = "404 Page not found!";
+                                        resolve();
+                                    });
+                                }
+                            }, error => {
+                                // If all else fails just write "404 Page not found!"
+                                (pageContent as Element).textContent = "404 Page not found!";
+                                resolve();
+                            });
+                        } else {
+                            // If all else fails just write "404 Page not found!"
+                            (pageContent as Element).textContent = "404 Page not found!";
+                            resolve();
+                        }
+                    });
+                }
             });
         });
-
-        await pageInfoResponse;
-        if (activePageInfo.page != null) {
-            let pageResponse = new Promise<void>(async (resolve, reject) => {
-                fetch(activePageDir + "/" + activePageInfo.page).then(response => {
-                    if (response.ok)
-                        return response.text();
-                    else
-                        return Promise.reject();
-                }).then(text => {
-                    let pageContent = document.querySelector("div#page-content");
-                    if (pageContent == null) return;
-                    pageContent.innerHTML = text;
-                    resolve();
-                }, async error => {
-                    // Load 404 error page.
-                    activePageDir = "error/404/";
-                    pageInfoPath = activePageDir + "info.json";
-                    let pageInfoResponse = new Promise<void>((resolve, reject) => {
-                        fetch(pageInfoPath).then(response => {
-                            if (response.ok)
-                                return response.json();
-                            else
-                                return Promise.reject();
-                        }).then(json => {
-                            activePageInfo = json;
-                            resolve();
-                        }, error => {
-                            activePageInfo = {};
-                            resolve();
-                        });
-                    });
-
-                    await pageInfoResponse;
-                    if (activePageInfo.page != null) {
-                        let pageResponse = fetch(activePageDir + "/" + activePageInfo.page).then(response => {
-                            if (response.ok)
-                                return response.text();
-                            else
-                                return Promise.reject();
-                        });
-                        pageResponse.then(text => {
-                            let pageContent = document.querySelector("div#page-content");
-                            if (pageContent == null) return;
-                            pageContent.innerHTML = text;
-                            resolve();
-                        }, error => {
-                            // If all else fails, just write "404 Page not found!" to the page-content div
-                            let pageContent = document.querySelector("div#page-content");
-                            if (pageContent == null) return;
-                            pageContent.textContent = "404 Page not found!";
-                            resolve();
-                        });
-                    }
-                });
-            });
-            await pageResponse;
-        }
-        resolve(activePageDir);
     });
-    updatePageCodeExamples();
 }
 
 window.addEventListener('hashchange', () => {

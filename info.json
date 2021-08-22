@@ -1,8 +1,20 @@
 {
 	"$schema": "schemas/info-schema.json",
-	"tutorialsLocation": "tutorials/tutorials.json",
-	"startTutorial": "create-vkInstance",
-	"samplesLocation": "samples/samples.json",
+	"pages": [
+		{
+			"visibleName": "Tutorials",
+			"sidebarId": "tutorials",
+			"id": "tutorials",
+			"subPages": "tutorials/tutorials.json"
+		},
+		{
+			"visibleName": "Samples",
+			"sidebarId": "samples",
+			"id": "samples",
+			"subPages": "samples/samples.json"
+		}
+	],
+	"startPage": "tutorials-create-vkInstance",
 	"availableExtensions": [
 		{
 			"visibleName": "C",
