@@ -1,0 +1,47 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema",
+	"description": "Vulkan samples schema",
+	"id": "samplesSchema",
+	"properties": {
+		"samples": {
+			"description": "Available samples",
+			"items": {
+				"description": "A sample",
+				"properties": {
+					"visibleName": {
+						"description": "The name shown to the user",
+						"type": "string"
+					},
+					"sidebarId": {
+						"description": "Id used to separate equally named tutorials in the sidebar",
+						"type": "string"
+					},
+					"id": {
+						"description": "Id used to separate equally named samples",
+						"type": "string"
+					}
+				},
+				"required": [ "visibleName", "sidebarId", "id" ],
+				"type": "object"
+			},
+			"type": "array",
+			"uniqueItems": true
+		},
+		"availableExtensions": {
+			"description": "Extensions to assume exists for all samples",
+			"items": {
+				"type": "string"
+			},
+			"type": "array",
+			"uniqueItems": true
+		},
+		"defaultExtension": {
+			"description": "The default extension to use from the available extensions array",
+			"type": "string"
+		}
+	},
+	"required": [ "samples", "availableExtensions", "defaultExtension" ],
+	"title": "Sample Schema",
+	"type": "object",
+	"version": "1.0.0"
+}

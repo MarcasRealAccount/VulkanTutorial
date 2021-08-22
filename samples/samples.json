@@ -1,0 +1,10 @@
+{
+	"$schema": "../schema/samples-schema.json",
+	"samples": [
+		{
+			"visibleName": "Test",
+			"sidebarId": "test",
+			"id": "test"
+		}
+	]
+}

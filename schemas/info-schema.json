@@ -1,0 +1,45 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema",
+	"description": "Info schema",
+	"id": "infoSchema",
+	"properties": {
+		"tutorialsLocation": {
+			"description": "The location where the tutorials.json file resides",
+			"type": "string"
+		},
+		"startTutorial": {
+			"description": "The tutorial to start from",
+			"type": "string"
+		},
+		"samplesLocation": {
+			"description": "The location where the samples.json file resides",
+			"type": "string"
+		},
+		"availableExtensions": {
+			"description": "Extensions to assume exists for all tutorials",
+			"items": {
+				"properties": {
+					"visibleName": {
+						"description": "The visible name of this extension",
+						"type": "string"
+					},
+					"id": {
+						"description": "Id used to separate equally named extensions",
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"type": "array",
+			"uniqueItems": true
+		},
+		"defaultExtension": {
+			"description": "The default extension to use from the available extensions array",
+			"type": "string"
+		}
+	},
+	"required": [ "tutorialsLocation", "startTutorial", "samplesLocation", "availableExtensions", "defaultExtension" ],
+	"title": "Info Schema",
+	"type": "object",
+	"version": "1.0.0"
+}

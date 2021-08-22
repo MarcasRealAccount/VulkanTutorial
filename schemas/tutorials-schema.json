@@ -1,0 +1,48 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema",
+	"description": "Vulkan tutorials schema",
+	"id": "tutorialsSchema",
+	"$defs": {
+		"tutorialListing": {
+			"description": "Tutorial listing",
+			"properties": {
+				"visibleName": {
+					"description": "The name shown to the user",
+					"type": "string"
+				},
+				"sidebarId": {
+					"description": "Id used to separate equally named tutorials in the sidebar",
+					"type": "string"
+				},
+				"id": {
+					"description": "Id used to separate equally named tutorials",
+					"type": "string"
+				},
+				"tutorials": {
+					"description": "If present makes this tutorial a folder like thing, meaning this tutorial has no actual tutorial itself but rather the tutorials inside this array might be",
+					"items": {
+						"$ref": "#/$defs/tutorialListing"
+					},
+					"type": "array",
+					"uniqueItems": true
+				}
+			},
+			"required": [ "visibleName", "sidebarId", "id" ],
+			"type": "object"
+		}
+	},
+	"properties": {
+		"tutorials": {
+			"description": "List of tutorials",
+			"items": {
+				"$ref": "#/$defs/tutorialListing"
+			},
+			"type": "array",
+			"uniqueItems": true
+		}
+	},
+	"required": [ "tutorials" ],
+	"title": "Tutorial Schema",
+	"type": "object",
+	"version": "1.0.0"
+}

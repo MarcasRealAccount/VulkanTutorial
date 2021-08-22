@@ -1,0 +1,39 @@
+{
+	"$schema": "../schemas/tutorials-schema.json",
+	"tutorials": [
+		{
+			"visibleName": "Device Creation",
+			"sidebarId": "device-creation",
+			"id": "create",
+			"tutorials": [
+				{
+					"visibleName": "Instance",
+					"sidebarId": "instance",
+					"id": "vkInstance"
+				},
+				{
+					"visibleName": "Physical Device",
+					"sidebarId": "physical-device",
+					"id": "vkPhysicalDevice"
+				},
+				{
+					"visibleName": "Device",
+					"sidebarId": "device",
+					"id": "vkDevice"
+				}
+			]
+		},
+		{
+			"visibleName": "Swapchain Creation",
+			"sidebarId": "swapchain-creation",
+			"id": "create",
+			"tutorials": [
+				{
+					"visibleName": "Swapchain",
+					"sidebarId": "swapchain",
+					"id": "vkSwapchainKHR"
+				}
+			]
+		}
+	]
+}

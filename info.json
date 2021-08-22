@@ -1,0 +1,17 @@
+{
+	"$schema": "schemas/info-schema.json",
+	"tutorialsLocation": "tutorials/tutorials.json",
+	"startTutorial": "create-vkInstance",
+	"samplesLocation": "samples/samples.json",
+	"availableExtensions": [
+		{
+			"visibleName": "C",
+			"id": "c"
+		},
+		{
+			"visibleName": "C++",
+			"id": "cpp"
+		}
+	],
+	"defaultExtension": "c"
+}

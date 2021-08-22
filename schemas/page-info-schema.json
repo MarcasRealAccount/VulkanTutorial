@@ -1,0 +1,23 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema",
+	"description": "Page info schema",
+	"id": "pageInfoSchema",
+	"properties": {
+		"page": {
+			"description": "HTML page to load with this tutorial",
+			"type": "string"
+		},
+		"next": {
+			"description": "The next pages to show at the bottom",
+			"items": {
+				"type": "string"
+			},
+			"type": "array",
+			"uniqueItems": true
+		}
+	},
+	"required": [ "page" ],
+	"title": "Page Info Schema",
+	"type": "object",
+	"version": "1.0.0"
+}

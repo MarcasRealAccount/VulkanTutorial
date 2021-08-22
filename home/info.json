@@ -1,0 +1,4 @@
+{
+	"$schema": "../schema/page-info-schema.json",
+	"page": "page.html"
+}
