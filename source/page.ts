@@ -8,7 +8,14 @@ let openedPageInfo: any = {};
 
 function getCodeExample(codeExample: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        resolve("Hey " + selectedExtension);
+        fetch(openedPageDir + "examples/" + codeExample).then(response => {
+            if (response.ok) return response.text();
+            else return Promise.reject();
+        }).then(codeExample => {
+            resolve(codeExample);
+        }, error => {
+            resolve("404 Could not load code example");
+        });
     });
 }
 
@@ -79,7 +86,7 @@ function updatePageCodeExamples_() {
 
         let codeDiv = codeExample.querySelector("#" + codeExample.id + "-code");
         if (codeDiv != null) {
-            getCodeExample(codeExample.id.replace(/-/g, "/") + "/").then(code => {
+            getCodeExample(codeExample.id + "." + selectedExtension).then(code => {
                 (codeDiv as Element).innerHTML = code;
             });
         }

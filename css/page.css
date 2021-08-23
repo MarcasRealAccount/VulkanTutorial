@@ -2,3 +2,22 @@
     font-weight: 600;
     font-size: 1.25rem;
 }
+
+div.code-example ul li button {
+    display: inline-flex;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
+    background-color: transparent;
+    text-decoration: none;
+    border: 0;
+    transition: all ease 0.25s;
+}
+
+    div.code-example ul li button:hover {
+        background-color: rgba(210, 244, 234, 0.85);
+        transition: all ease 0.25s;
+    }
+
+    div.code-example ul li button:focus {
+        box-shadow: none;
+    }
