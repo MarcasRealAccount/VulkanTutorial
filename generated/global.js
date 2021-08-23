@@ -77,7 +77,7 @@ function getOptionValue(name) {
 function getPageVisibleName_(pageId, page) {
     if (page.subPages != null) {
         for (let i = 0, len = page.subPages.length; i < len; ++i) {
-            let res = getPageVisibleName_(pageId.substr(pageId.indexOf("-")), page.subPages[i]);
+            let res = getPageVisibleName_(pageId.substr(pageId.indexOf("-") + 1), page.subPages[i]);
             if (res != null)
                 return res;
         }
@@ -88,6 +88,8 @@ function getPageVisibleName_(pageId, page) {
     return null;
 }
 function getPageVisibleName(pageId) {
+    if (pageId === "")
+        return "Home";
     let pages = info.pages;
     for (let i = 0, len = pages.length; i < len; ++i) {
         let res = getPageVisibleName_(pageId, pages[i]);

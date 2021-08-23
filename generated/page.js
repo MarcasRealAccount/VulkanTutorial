@@ -18,7 +18,7 @@ function updatePageTitle() {
                 return;
             let pageName = getPageVisibleName(openedPage);
             if (pageName == null)
-                return;
+                pageName = "400 Bad request";
             pageTitleSpan.textContent = pageName;
         }, error => {
         });
@@ -99,6 +99,13 @@ function updateActivePage() {
             if (previousOpenedPage === openedPage) {
                 reject();
                 return;
+            }
+            let title = document.querySelector("html head title");
+            if (title != null) {
+                let pageName = getPageVisibleName(openedPage);
+                if (pageName == null)
+                    pageName = "400 Bad request";
+                title.textContent = "Vulkan Tutorial - " + pageName;
             }
             let pageContent = document.querySelector("div#page-content");
             if (pageContent == null) {
