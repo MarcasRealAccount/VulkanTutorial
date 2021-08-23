@@ -115,7 +115,7 @@ function getPages(pagesDir: string, fileName: string): Promise<any> {
                 let pageStrings = getSubPagesStrings(page);
                 for (let j: number = 0, jlen: number = pageStrings.length; j < jlen; ++j) {
                     let pageString = pageStrings[j];
-                    let matches = pageString.match(/(.*\/)(.*)/g);
+                    let matches = pageString.match(/(.*\/)(.*)/);
                     if (matches == null || matches.length < 3) {
                         page.subPages = null;
                         continue;
@@ -151,14 +151,12 @@ function loadGlobalConfigs() {
                 let pageStrings = getSubPagesStrings(page);
                 for (let j: number = 0, jlen: number = pageStrings.length; j < jlen; ++j) {
                     let pageString = pageStrings[j];
-                    console.log(pageString);
-                    let matches = pageString.match(/(.*\/)(.*)/g);
-                    console.log(matches);
-                    if (matches == null || matches.length < 2) {
+                    let matches = pageString.match(/(.*\/)(.*)/);
+                    if (matches == null || matches.length < 3) {
                         page.subPages = null;
                         continue;
                     }
-                    page.subPages = (await getPages(matches[0], matches[1])).pages;
+                    page.subPages = (await getPages(matches[1], matches[2])).pages;
                 }
             }
 
