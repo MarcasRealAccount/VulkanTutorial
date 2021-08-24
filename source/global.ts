@@ -21,7 +21,6 @@ function updateHashString() {
 
 function parseOptionsFromHashString() {
     optionsPromise = new Promise<void>((resolve, reject) => {
-        previousOpenedPage = openedPage;
         let hash = window.location.hash;
         let hashOptions = hash.substr(1).split(/\?|&/g);
         if (hashOptions.length > 0) openedPage = hashOptions[0];
@@ -38,6 +37,11 @@ function parseOptionsFromHashString() {
         }
         resolve();
     });
+}
+
+function setOpenedPage(page: string) {
+    openedPage = page;
+    updateHashString();
 }
 
 function setOptionValue(name: string, value: string | null) {

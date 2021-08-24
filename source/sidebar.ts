@@ -15,7 +15,7 @@ function getSidebarHTML(page: any, sidebarIdPrefix: string, idPrefix: string): s
         html += "</ul></div></li>";
         return html;
     } else {
-        return "<li class=\"rounded\"><a class=\"text-decoration-none rounded\" href=\"#" + id + "\" id=\"sidebar-" + sidebarId + "\">" + page.visibleName + "</a></li>";
+        return "<li class=\"rounded\"><button class=\"btn text-decoration-none rounded page-button\" href=\"" + id + "\" id=\"sidebar-" + sidebarId + "\">" + page.visibleName + "</button></li>";
     }
 }
 
@@ -32,6 +32,15 @@ function sidebarInitialise() {
                 for (let i: number = 0, len: number = sidebarLists.length; i < len; ++i) {
                     let sidebarList = sidebarLists[i];
                     sidebarList.innerHTML = sidebarHTML;
+
+                    let buttons = sidebarList.querySelectorAll("button.page-button");
+                    for (let j: number = 0, jlen: number = buttons.length; j < jlen; ++j) {
+                        let button = buttons[j];
+                        button.addEventListener("click", () => {
+                            let href = button.getAttribute("href");
+                            if (href != null) setOpenedPage(href);
+                        });
+                    }
                 }
             }
             resolve();
@@ -45,12 +54,11 @@ function sidebarUpdateActive(): void {
         sidebarInitialisePromise.then(() => {
             optionsPromise.then(() => {
                 let id = openedPage;
-                let sidebarLinks = document.querySelectorAll(".sidebar-dropdown-collapse ul li a[href]");
-                let href = "#" + id;
+                let sidebarLinks = document.querySelectorAll(".sidebar-dropdown-collapse ul li button[href]");
                 for (let i: number = 0, len: number = sidebarLinks.length; i < len; ++i) {
                     let sidebarLink = sidebarLinks[i];
 
-                    if (sidebarLink.getAttribute("href") === href) {
+                    if (sidebarLink.getAttribute("href") === id) {
                         let current = sidebarLink;
                         let parent: Element | null;
                         while ((parent = current.closest("div.sidebar-dropdown-collapse")) != null) {

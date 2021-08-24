@@ -125,6 +125,7 @@ function updateActivePage() {
                 reject();
                 return;
             }
+            previousOpenedPage = openedPage;
             let title = document.querySelector("html head title");
             if (title != null) {
                 let pageName = getPageVisibleName(openedPage);

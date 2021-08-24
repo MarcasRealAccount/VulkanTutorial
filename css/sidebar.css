@@ -62,7 +62,7 @@
             transition: all ease 0.25s;
         }
 
-        .sidebar-dropdown-collapse ul li a {
+        .sidebar-dropdown-collapse ul li button {
             display: inline-flex;
             padding: 0.1875rem 0.5rem;
             margin-left: 1.25rem;
@@ -74,7 +74,11 @@
             transition: background-color ease 0.25s;
         }
 
-            .sidebar-dropdown-collapse ul li a:hover {
+            .sidebar-dropdown-collapse ul li button:hover {
                 background-color: rgba(210, 244, 234, 0.85);
                 transition: all ease 0.25s;
+            }
+
+            .sidebar-dropdown-collapse ul li button:focus {
+                box-shadow: none;
             }

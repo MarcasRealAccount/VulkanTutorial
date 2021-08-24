@@ -53,6 +53,7 @@ div.code-example ul li button.btn.nav-link {
     border-collapse: separate;
     border-spacing: 0;
     background-color: rgba(0, 0, 0, 0.1);
+    display: flex;
 }
 
 .code-example-line-nr {
@@ -70,6 +71,7 @@ div.code-example ul li button.btn.nav-link {
     padding-left: 0.5rem;
     font-family: 'JetBrains Mono', monospace;
     white-space: pre-wrap;
+    word-break: break-all;
     tab-size: 4;
 }
 
