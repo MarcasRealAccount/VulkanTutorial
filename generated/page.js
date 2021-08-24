@@ -5,6 +5,17 @@ let activePageInitialiseExamplesPromise;
 let activePageCodeExamplesPromise;
 let openedPageDir = "";
 let openedPageInfo = {};
+function makeHTMLCompatible(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+}
+function convertCodeExampleToTable(codeExample) {
+    let codeExampleLines = codeExample.split("\n");
+    let html = "<table class=\"code-example-table\" cellpadding=\"0\"><tbody>";
+    for (let i = 0, len = codeExampleLines.length; i < len; ++i)
+        html += "<tr><td id=\"L" + i + "\" class=\"code-example-line-nr\">" + i + "</td><td id=\"LC" + i + "\" class=\"code-example-line\">" + makeHTMLCompatible(codeExampleLines[i]) + "</td></tr>";
+    html += "</tbody></table>";
+    return html;
+}
 function getCodeExample(codeExample) {
     return new Promise((resolve, reject) => {
         fetch(openedPageDir + "examples/" + codeExample).then(response => {
@@ -13,16 +24,16 @@ function getCodeExample(codeExample) {
             else
                 return Promise.reject();
         }).then(codeExample => {
-            resolve(codeExample);
+            resolve(convertCodeExampleToTable(codeExample));
         }, error => {
             resolve("404 Could not load code example");
         });
     });
 }
 function updatePageTitle() {
+    let pageTitleSpan = document.querySelector("span#page-title");
     activePagePromise.then(() => {
         optionsPromise.then(() => {
-            let pageTitleSpan = document.querySelector("span#page-title");
             if (pageTitleSpan == null)
                 return;
             let pageName = getPageVisibleName(openedPage);
@@ -43,7 +54,12 @@ function activePageInitialiseExamples() {
                 let html = "<ul class=\"nav nav-tabs\">";
                 for (let j = 0, jlen = info.availableExtensions.length; j < jlen; ++j) {
                     let extension = info.availableExtensions[j];
-                    html += "<li class=\"nav-item\"><button class=\"btn nav-link\" data-code-extension=\"" + extension.id + "\">" + extension.visibleName + "</button></li>";
+                    html += "<li class=\"nav-item\"><button class=\"btn nav-link";
+                    if (j == jlen - 1)
+                        html += " border-radius-bottom-left-0";
+                    else
+                        html += " border-radius-bottom-right-0 border-radius-bottom-left-0";
+                    html += "\" data-code-extension=\"" + extension.id + "\">" + extension.visibleName + "</button></li>";
                 }
                 html += "</ul><div class=\"code-example-code\" id=\"" + codeExample.id + "-code\">Loading</div>";
                 codeExample.innerHTML = html;
