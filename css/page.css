@@ -66,6 +66,7 @@ div.code-example ul li button.btn.nav-link {
     font-size: 12px;
     white-space: nowrap;
     user-select: none;
+    width: 1%;
 }
 
 .code-example-line {
