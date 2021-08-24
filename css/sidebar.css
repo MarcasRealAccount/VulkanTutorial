@@ -49,7 +49,7 @@
         }
 
 .sidebar-dropdown-collapse {
-    padding: 0px 0px 0px 0.5rem;
+    padding: 0px 0px 0px 1.5rem;
 }
 
     .sidebar-dropdown-collapse ul li {
@@ -65,7 +65,7 @@
         .sidebar-dropdown-collapse ul li button {
             display: inline-flex;
             padding: 0.1875rem 0.5rem;
-            margin-left: 1.25rem;
+            margin-left: 0.5rem;
             font-weight: 600;
             color: rgba(0, 0, 0, 0.85);
             background-color: transparent;
